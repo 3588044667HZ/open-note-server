@@ -1,0 +1,12 @@
+{
+  "id": "n29bf0be8ff",
+  "title": "Note 1",
+  "content": "Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1Content 1",
+  "notebookId": "nb62260acfdc",
+  "color": "blue",
+  "isPinned": false,
+  "version": 1,
+  "createdAt": "2026-08-02T13:35:49Z",
+  "updatedAt": "2026-08-02T13:35:49Z",
+  "deletedAt": null
+}

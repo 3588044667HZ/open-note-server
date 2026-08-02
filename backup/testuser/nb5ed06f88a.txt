@@ -1,0 +1,12 @@
+{
+  "id": "nb5ed06f88a",
+  "title": "Test Note",
+  "content": "Hello world",
+  "notebookId": "test",
+  "color": "blue",
+  "isPinned": false,
+  "version": 3,
+  "createdAt": "2026-08-02T13:36:42Z",
+  "updatedAt": "2026-08-02T13:37:36Z",
+  "deletedAt": null
+}
