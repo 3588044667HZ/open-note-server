@@ -30,14 +30,17 @@ open-note-server/
 │   ├── notebooks.py           # 笔记本 CRUD
 │   ├── notes.py               # 笔记 CRUD + 增量同步 + 回收站
 │   ├── settings.py            # 分享设置
+│   ├── admin_api.py           # 管理后台 API
 │   ├── backup.py              # txt 冷备模块
-│   └── frontend.py            # UA 检测 + 双端静态资源分发
+│   └── frontend.py            # UA 检测 + 静态资源分发
+├── admin-frontend/            # 管理后台前端（Vue 3）
 ├── scripts/
 │   ├── deploy.ps1             # 一键部署（Windows）
 │   └── restore.py             # 冷备恢复工具
 ├── static/
 │   ├── desktop/               # 桌面端前端构建产物
-│   └── mobile/                # 移动端前端构建产物
+│   ├── mobile/                # 移动端前端构建产物
+│   └── admin/                 # 管理后台构建产物
 ├── data/
 │   ├── accounts.db            # 用户表
 │   └── notes.db               # 笔记 + 笔记本 + 分享设置
@@ -84,7 +87,7 @@ python server.py
 
 ## 部署教程
 
-部署时需要将两端前端构建产物放入 `static/` 目录，使服务器能根据设备类型分发对应页面。
+部署时需要将三端前端构建产物放入 `static/` 目录，使服务器能根据设备类型分发对应页面。
 
 ### 方式一：一键部署（Windows PowerShell）
 
@@ -173,7 +176,31 @@ python scripts/restore.py
 
 恢复逻辑：遍历 `backup/` 下所有用户的 `.txt` 文件，逐条写入 `notes.db`。
 
-**测试账号：allen PWD:123456**
+## 管理后台
+
+访问 `http://localhost:5000/admin` 进入管理后台。管理后台与用户账号体系完全隔离，使用配置文件中设置的独立密码认证。
+
+默认密码：`admin123`（部署时修改 `config.py` 中的 `ADMIN_PASSWORD`）
+
+### 功能
+
+| 页面 | 功能 |
+|------|------|
+| 仪表盘 | 用户数、活跃笔记数、回收站笔记数、内容总量统计 |
+| 用户管理 | 搜索用户、新建用户、重置密码、删除用户及全部数据 |
+| 笔记管理 | 跨用户查看笔记、Markdown 预览、关键词搜索、强制删除 |
+
+### 构建
+
+管理后台源码位于 `admin-frontend/`，基于 Vue 3 + Vite 构建：
+
+```bash
+cd admin-frontend
+npm install
+npm run build          # 构建产物输出到 ../static/admin/
+```
+
+`scripts/deploy.ps1` 一键部署脚本已包含管理后台的构建步骤。
 
 ## API 文档
 
@@ -188,6 +215,7 @@ python scripts/restore.py
 | 回收站 | `GET /api/notes/trash`, `PUT /api/notes/:id/recover`, `DELETE /api/notes/:id/permanent` |
 | 固定 | `PUT /api/notes/:id/pin` |
 | 分享设置 | `GET/PUT /api/settings/share` |
+| 管理后台 | `POST /api/admin/login`, `GET /api/admin/stats`, `GET/POST /api/admin/users`, `DELETE /api/admin/users/:id`, `PUT /api/admin/users/:id/password`, `GET /api/admin/notes`, `DELETE /api/admin/notes/:id` |
 | 健康检查 | `GET /api/health` |
 
 所有笔记/笔记本接口需要 `Authorization: Bearer <token>` 认证头。
