@@ -21,7 +21,7 @@ notes.db              backup/<user>/n_<id>.txt
 ## 项目结构
 
 ```
-mock-server/
+open-note-server/
 ├── server.py                  # 入口
 ├── config.py                  # 配置常量
 ├── app/
@@ -57,8 +57,8 @@ mock-server/
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/3588044667HZ/open-note-mock-server.git
-cd open-note-mock-server
+git clone https://github.com/3588044667HZ/open-note-server.git
+cd open-note-server
 ```
 
 ### 2. 安装 Python 依赖
@@ -123,16 +123,16 @@ npm run build
 
 ```bash
 # 将桌面端 dist/ 复制到 mock-server/static/desktop/
-cp -r open-note-frontend/dist/* mock-server/static/desktop/
+cp -r open-note-frontend/dist/* open-note-server/static/desktop/
 
 # 将移动端 dist/ 复制到 mock-server/static/mobile/
-cp -r open-note-mobile/dist/* mock-server/static/mobile/
+cp -r open-note-mobile/dist/* open-note-server/static/mobile/
 ```
 
 #### 4. 安装依赖并启动
 
 ```bash
-cd mock-server
+cd open-note-server
 pip install -r requirements.txt
 ```
 
