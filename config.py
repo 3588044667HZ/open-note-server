@@ -22,3 +22,8 @@ SHARE_DEFAULT_LOGO_TEXT = '分享来自 Open Note'
 SHARE_DEFAULT_WATERMARK = '备忘录'
 
 MOBILE_UA_KEYWORDS = ['mobile', 'android', 'iphone', 'ipad', 'webos', 'blackberry', 'windows phone']
+
+ADMIN_PASSWORD = 'admin123'
+ADMIN_TOKEN_TTL = 7200
+
+STATIC_ADMIN = os.path.join(BASE_DIR, 'static', 'admin')

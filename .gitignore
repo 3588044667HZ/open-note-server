@@ -1,2 +1,9 @@
 /accounts.db
 /.venv/
+/static/desktop/assets/
+/static/desktop/index.html
+/static/mobile/assets/
+/static/mobile/favicon.svg
+/static/mobile/index.html
+/admin-frontend/node_modules/
+/admin-frontend/package-lock.json

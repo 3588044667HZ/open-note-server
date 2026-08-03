@@ -4,7 +4,10 @@ import time as _time
 from datetime import datetime
 from functools import wraps
 from flask import request, jsonify, g
-from config import ACCOUNTS_DB, NOTES_DB, DATA_DIR, BACKUP_DIR, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL
+from config import (
+    ACCOUNTS_DB, NOTES_DB, DATA_DIR, BACKUP_DIR,
+    ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL, ADMIN_TOKEN_TTL
+)
 
 sessions = {}
 
@@ -160,9 +163,32 @@ def _create_tokens(user_id, username):
     }
     return access, refresh
 
+def require_admin(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        _cleanup_sessions()
+        token = _token_from_header()
+        s = sessions.get(token)
+        if not s or not s.get('is_admin'):
+            return error('Unauthorized', 401, 401)
+        if s['expires_at'] < utc_ts():
+            sessions.pop(token, None)
+            return error('Token expired', 401, 401)
+        return f(*args, **kwargs)
+    return decorated
+
+def create_admin_token():
+    token = uuid.uuid4().hex
+    sessions[token] = {
+        'is_admin': True,
+        'expires_at': utc_ts() + ADMIN_TOKEN_TTL,
+    }
+    return token
+
 def _touch_expiry(token):
     if token in sessions:
-        sessions[token]['expires_at'] = utc_ts() + ACCESS_TOKEN_TTL
+        ttl = ADMIN_TOKEN_TTL if sessions[token].get('is_admin') else ACCESS_TOKEN_TTL
+        sessions[token]['expires_at'] = utc_ts() + ttl
 
 def note_row_to_dict(row):
     return {
