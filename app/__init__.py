@@ -18,11 +18,13 @@ def create_app():
     from app.notebooks import notebooks_bp
     from app.notes import notes_bp
     from app.settings import settings_bp
+    from app.admin_api import admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(notebooks_bp)
     app.register_blueprint(notes_bp)
     app.register_blueprint(settings_bp)
+    app.register_blueprint(admin_bp)
 
     from app.frontend import detect_device
     app.before_request(detect_device)

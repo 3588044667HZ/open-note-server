@@ -1,5 +1,4 @@
-
-# Open Note -  Server
+# Open Note - Server
 
 跨设备同步的便签应用后端服务，支持桌面端和移动端共用同一入口，根据 User-Agent 自动分发对应前端资源。
 
