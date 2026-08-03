@@ -121,17 +121,17 @@ npm run build
 #### 3. 复制构建产物
 
 ```bash
-# 将桌面端 dist/ 复制到 open-note-server/static/desktop/
+# 将桌面端 dist/ 复制到 mock-server/static/desktop/
 cp -r open-note-frontend/dist/* open-note-server/static/desktop/
 
-# 将移动端 dist/ 复制到 open-note-server/static/mobile/
+# 将移动端 dist/ 复制到 mock-server/static/mobile/
 cp -r open-note-mobile/dist/* open-note-server/static/mobile/
 ```
 
 #### 4. 安装依赖并启动
 
 ```bash
-cd mock-server
+cd open-note-server
 pip install -r requirements.txt
 ```
 
@@ -172,6 +172,8 @@ python scripts/restore.py
 ```
 
 恢复逻辑：遍历 `backup/` 下所有用户的 `.txt` 文件，逐条写入 `notes.db`。
+
+**测试账号：allen PWD:123456**
 
 ## API 文档
 
