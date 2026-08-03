@@ -174,6 +174,8 @@ python scripts/restore.py
 
 恢复逻辑：遍历 `backup/` 下所有用户的 `.txt` 文件，逐条写入 `notes.db`。
 
+**测试账号：allen PWD:123456**
+
 ## API 文档
 
 详见 [API.md](./API.md)
