@@ -27,3 +27,7 @@ ADMIN_PASSWORD = 'admin123'
 ADMIN_TOKEN_TTL = 7200
 
 STATIC_ADMIN = os.path.join(BASE_DIR, 'static', 'admin')
+
+FILES_DIR = os.path.join(DATA_DIR, 'files')
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}

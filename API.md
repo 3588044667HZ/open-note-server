@@ -314,6 +314,188 @@ Permanently delete a note from trash.
 
 ---
 
+## Files & Images
+
+图片上传和附件管理，用于富文本编辑器中内嵌图片的存储与跨设备同步。
+
+### Data Model: Attachment
+
+```json
+{
+  "attachId": "a1b2c3...",
+  "noteId": "n1",
+  "type": 0,
+  "fileName": "photo.jpg",
+  "fileId": "f_abc123",
+  "width": 1920,
+  "height": 1080,
+  "md5": "d41d8cd9...",
+  "url": "",
+  "state": 0,
+  "createdAt": "2026-08-01T10:00:00Z"
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| attachId | string | 附件唯一标识 (UUID) |
+| noteId | string | 所属笔记 ID |
+| type | int | `0` = 图片, `1` = 手写, `2` = 语音 |
+| fileName | string | 原始文件名 |
+| fileId | string | 服务端文件标识 |
+| width | int | 图片宽度 (px) |
+| height | int | 图片高度 (px) |
+| md5 | string | 文件 MD5，空字符串 = 待同步 |
+| url | string | 空 = 仅本地待上传, 非空 = 已同步的服务端 fileId |
+| state | int | `0` = NEW, `1` = SYNCED, `2` = MODIFIED |
+| createdAt | string | ISO 8601 创建时间 |
+
+---
+
+### POST /api/files/upload
+
+上传图片文件到服务器。需要认证。
+
+```
+POST /api/files/upload
+Authorization: Bearer xxx
+Content-Type: multipart/form-data
+
+file: (binary image data)
+noteId: n1  (可选)
+```
+
+Response:
+```json
+{
+  "code": 0,
+  "data": {
+    "fileId": "f_abc123",
+    "url": "https://cdn.example.com/f_abc123.webp",
+    "width": 1920,
+    "height": 1080,
+    "md5": "d41d8cd98f00b204e9800998ecf8427e"
+  }
+}
+```
+
+| 约束 | 值 |
+|------|-----|
+| 最大文件大小 | 10 MB |
+| 支持格式 | JPEG, PNG, GIF, WebP |
+| 超时 | 60s |
+
+---
+
+### GET /api/attachments/:attachId/download
+
+下载附件图片。返回二进制流，`Content-Type` 为实际图片类型。
+
+> 前端可通过 `getAttachmentDownloadUrl(attachId)` 获取完整 URL 直接用于 `<img src>`。
+
+---
+
+### GET /api/notes/:id/attachments
+
+获取笔记的所有附件列表。需要认证。
+
+```
+GET /api/notes/n1/attachments
+```
+
+Response:
+```json
+{
+  "code": 0,
+  "data": [
+    {
+      "attachId": "a1b2c3...",
+      "noteId": "n1",
+      "type": 0,
+      "fileName": "photo.jpg",
+      "fileId": "f_abc123",
+      "width": 1920,
+      "height": 1080,
+      "md5": "d41d8cd9...",
+      "state": 1,
+      "createdAt": "2026-08-01T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### PUT /api/attachments/:attachId
+
+更新附件元数据（同步后写回 md5/fileId）。需要认证。
+
+```
+PUT /api/attachments/a1b2c3...
+Content-Type: application/json
+
+{ "md5": "d41d8cd9...", "state": 1 }
+```
+
+---
+
+### DELETE /api/attachments/:attachId
+
+删除笔记中的附件（同时删除服务器文件）。需要认证。
+
+```
+DELETE /api/attachments/a1b2c3...
+```
+
+---
+
+### 同步决策流程
+
+```
+for each Attachment where md5 == "":
+  if url == "" → POST /api/files/upload     (上传)
+  if url != "" → GET /attachments/:id/download  (下载)
+              → PUT /attachments/:id         (写回 md5)
+```
+
+---
+
+## Text Color
+
+文字颜色不通过独立 API 传输，而是**内联在笔记 content 中**。使用 CSS 变量名存储，支持浅/深色模式自动切换。
+
+### 颜色预设
+
+| CSS 变量 | 浅色模式 | 深色模式 |
+|---------|---------|---------|
+| `--blueColor` | `#1A73E8` | `#8AB4F8` |
+| `--redColor` | `#EA4335` | `#F28B82` |
+| `--greenColor` | `#34A853` | `#81C995` |
+| `--orangeColor` | `#FB9600` | `#FDD663` |
+| `--yellowColor` | `#F9AB00` | `#FDE293` |
+| `--grayColor` | `#5F6368` | `#BDC1C6` |
+
+### 存储格式 (Markdown 内联 HTML)
+
+```markdown
+这是<span style="color: var(--blueColor)">蓝色文字</span>，后面正常。
+```
+
+### 前端 API
+
+```js
+// api/index.js
+uploadFile(file, noteId)              → POST   /files/upload
+getAttachmentDownloadUrl(attachId)    → 返回下载 URL 字符串
+getNoteAttachments(noteId)            → GET    /notes/:id/attachments
+updateAttachment(attachId, data)      → PUT    /attachments/:id
+deleteAttachment(attachId)            → DELETE /attachments/:id
+```
+
+> 文字颜色不需要额外 API — 内容本身已携带颜色信息，随 `PUT /api/notes/:id` 的 content 字段一同持久化。
+
+---
+
 ## Health Check
 
 ### GET /api/health

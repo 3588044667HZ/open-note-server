@@ -92,6 +92,23 @@ def init_db():
             watermark TEXT NOT NULL DEFAULT '备忘录'
         )
     ''')
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS attachments (
+            attach_id TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            note_id TEXT NOT NULL,
+            type INTEGER NOT NULL DEFAULT 0,
+            file_name TEXT NOT NULL DEFAULT '',
+            file_id TEXT NOT NULL,
+            width INTEGER NOT NULL DEFAULT 0,
+            height INTEGER NOT NULL DEFAULT 0,
+            md5 TEXT NOT NULL DEFAULT '',
+            state INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+    ''')
+    db.execute('CREATE INDEX IF NOT EXISTS idx_attachments_note ON attachments(note_id)')
+    db.execute('CREATE INDEX IF NOT EXISTS idx_attachments_user ON attachments(user_id)')
     db.commit()
     db.close()
 
@@ -209,5 +226,20 @@ def notebook_row_to_dict(row):
         'id': row['id'],
         'name': row['name'],
         'color': row['color'],
+        'createdAt': row['created_at'],
+    }
+
+def attachment_row_to_dict(row):
+    return {
+        'attachId': row['attach_id'],
+        'noteId': row['note_id'],
+        'type': row['type'],
+        'fileName': row['file_name'],
+        'fileId': row['file_id'],
+        'width': row['width'],
+        'height': row['height'],
+        'md5': row['md5'],
+        'url': '',
+        'state': row['state'],
         'createdAt': row['created_at'],
     }
